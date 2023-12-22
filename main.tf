@@ -6,29 +6,19 @@ terraform {
     lock_method    = "POST"
     unlock_method  = "POST"
   }
-
-  required_providers {
-    abbey = {
-      source = "abbeylabs/abbey"
-      version = "0.2.4"
-    }
-  }
 }
 
 locals {
+  account_name = ""
+  repo_name = ""
+
+  project_path = "github://${local.account_name}/${local.repo_name}"
+  policies_path = "${local.project_path}/policies"
+
   # Replace if your abbey email doesn't match your Google User email
   # Example: gcp_member = "your-username@gmail.com"
   google_group_member_email = "{{ .data.system.abbey.identities.abbey.email }}"
   google_customer_id = "C1111111" # CHANGEME
-}
-
-provider "googleworkspace" {
-  customer_id = "${local.google_customer_id}"
-}
-
-provider "abbey" {
-  # Configuration options
-  bearer_auth = var.abbey_token
 }
 
 resource "googleworkspace_group" "google_workspace_demo" {
@@ -52,13 +42,13 @@ resource "abbey_grant_kit" "googleworkspace" {
   }
 
   policies = [
-    { bundle = "github://replace-me-with-organization/replace-me-with-repo/policies" } # CHANGEME
+    { bundle = local.policies_path }
   ]
 
   output = {
     # Replace with your own path pointing to where you want your access changes to manifest.
     # Path is an RFC 3986 URI, such as `github://{organization}/{repo}/path/to/file.tf`.
-    location = "github://replace-me-with-organization/replace-me-with-repo/access.tf" # CHANGEME
+    location = "${local.project_path}/access.tf"
     append = <<-EOT
       resource "googleworkspace_group_member" "member" {
         group_id = googleworkspace_group.google_workspace_demo.id
