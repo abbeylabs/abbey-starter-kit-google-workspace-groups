@@ -17,7 +17,7 @@ locals {
 
   # Replace if your abbey email doesn't match your Google User email
   # Example: gcp_member = "your-username@gmail.com"
-  google_group_member_email = "{{ .data.system.abbey.identities.abbey.email }}"
+  google_group_member_email = "{{ .user.email }}"
   google_customer_id = "C1111111" # CHANGEME
 }
 
