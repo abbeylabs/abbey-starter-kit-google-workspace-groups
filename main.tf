@@ -14,10 +14,6 @@ locals {
 
   project_path = "github://${local.account_name}/${local.repo_name}"
   policies_path = "${local.project_path}/policies"
-
-  # Replace if your abbey email doesn't match your Google User email
-  # Example: gcp_member = "your-username@gmail.com"
-  google_group_member_email = "{{ .user.email }}"
   google_customer_id = "C1111111" # CHANGEME
 }
 
@@ -52,7 +48,7 @@ resource "abbey_grant_kit" "googleworkspace" {
     append = <<-EOT
       resource "googleworkspace_group_member" "member" {
         group_id = googleworkspace_group.google_workspace_demo.id
-        email = "${local.google_group_member_email}"
+        email = "{{ .user.googleworkspace.email }}"
         role = "MEMBER"
       }
     EOT
